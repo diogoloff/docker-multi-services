@@ -8,6 +8,8 @@ Durante este curso tive uma idéia "e se em vez de separar os clientes lá por p
 
 Então durante esta pesquisa exaustiva encontrei este repositório [phusion/baseimage-docker](https://github.com/phusion/baseimage-docker) onde foi disponibilizado uma imagem mínima de Ubuntu com alguns serviços instalados syslog, ssh e cron. Peguei o exemplo e dei uma estudada, basicamente ele criou um serviço chamado **my_init** que em cima do *runit* (que é um gerenciador de serviços do linux bem enxuto), no geral as imagens não tem controle de serviços, mesmo que instale um ubuntu limpo, você não terá o systemd ou o init.d mesmo que as pastas existam, então este cara resolve isto, pois ao iniciar o conteiner é rodado este serviço chamado **my_init** onde tudo que estiver acoplado a ele é iniciado ou parado quando necessário.
 
+Além disto ele resolveu outro problema que é o controle do PID, foi aqui que vi muitos exemplos na internet falhos, ocorre que se você subir multiplos serviços sendo um destes o PID 1, este irá encerrar correto já os demais irão encerrar de forma abrupta, situação que não queremos, pois podemos corromper um banco ou arquivo fazendo isto. Como ele sobe o PID 1 em cima de um script customizado e este faz todo controle dos demais serviços, se encerrarmos o conteiner, o serviço do **my_init** assim que receber o *SIG TERM* o mesmo irá dar o comando para todos os demais serviços serem encerrados primeiro antes dele.
+
 # O que esta imagem tem de diferente da original?
 
 Antes de mais nada gostaria de agradecer e fazer menção ao **@phusion** e sua equipe que disponibilizaram este fonte de forma gratuíta e livre.
@@ -18,6 +20,27 @@ Também coloquei um pack de ferramentas adicionais que estou mais ambientado a u
 
 Então vamos ao que interessa sobre o que temos nesta imagem:
 
-* Base: ubuntu:latest, oficial.
-* Ferramentas essencias: runit (gerenciador de serviços), psmisc (para controle de kill e arvor de processos)
-* Ferramentas Extras: curl (permite donwloads), tar (descompactação), nano (editor de texto), apt_install_clean (script personalizado para rodar o apt de forma minima e limpa)
+* Base: ubuntu:latest, oficial;
+* Ferramentas essencias: runit (gerenciador de serviços), psmisc (para controle de kill e arvor de processos), syslog-ng (para registro de log);
+* Ferramentas Extras: curl (permite donwloads), tar (descompactação), nano (editor de texto), apt_install_clean (script personalizado para rodar o apt de forma minima e limpa);
+* Foi customizado para o locale ser padrão pt_BR.UTF-8;
+* Foi customizado para o timezone ser padrão UTC-3.
+
+# Como colocar serviços adicionais nesta imagem?
+
+Se você quer eles atrelados a immagem basta colocar dentro do arquivo **Dockerfile** na linha 69 entre os scripts servicos.sh e limpeza.sh, o seu script personalizado com o serviço que você deseja que tenha já implantado na base da imagem. Qualquer serviço aqui colocado deve possuir um script personalizado de inicialização e parada.
+
+* Os scripts de inicialização devem sempre ser colocados na pasta /etc/my_init.d;
+* Os scripts de encerramento devem sempre ser colocados na pasta /etc/my_init.pre_shutdown.d ou /etc/my_init.post_shutdown.d não ha diferença entre as duas basicamentem, uma executa antes e outra depois.
+
+Se os serviços são uns dependentes de outros, na inicialização os scripts devem ter uma sequencia númérica, exemplo "00_ServiçoA, 01_ServiçoB, 02_ServicoC..." e assim por diante, a execução será nesta ordem. Já no encerramento se este caso existir, a ordem precisa ser inversa digamos "00_ServicoC, 01_ServicoB, 02_ServicoA...".
+
+# Não quero colocar um serviço já instalado na imagem, quero manter ela limpa!
+
+Quando você criar um conteiner acessar o mesmo, instalar sua aplicação e colocar os scripts de inicialização e encerramento nas mesmas pastas citadas no exemplo acima.
+
+# Para rodar o conteiner
+
+docker run -d NomeImagem /sbin/my_init 
+
+
