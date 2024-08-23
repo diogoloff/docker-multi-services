@@ -28,8 +28,6 @@ RUN /docker_build/base.sh && \
 	/docker_build/servicos.sh && \
     /docker_build/limpeza.sh
 
-VOLUME /opt/logosystem/BD
-
 ENV DEBIAN_FRONTEND="teletype" \
     LANG="pt_BR.UTF-8" \
     LANGUAGE="pt_BR:pt" \
