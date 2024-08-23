@@ -21,7 +21,7 @@ Também coloquei um pack de ferramentas adicionais que estou mais ambientado a u
 Então vamos ao que interessa sobre o que temos nesta imagem:
 
 * Base: ubuntu:latest, oficial;
-* Ferramentas essencias: runit (gerenciador de serviços), psmisc (para controle de kill e arvor de processos), syslog-ng (para registro de log);
+* Ferramentas essencias: runit (gerenciador de serviços), psmisc (para controle de kill e arvor de processos), syslog-ng (para registro de log), apt-transport-https ca-certificates software-properties-common (estas 3 ultimas tem relação com SSH e controle de chaves para HTTPS, eu mantive pois o script original cria estes repositórios então não quis modificar. Também se pensarmos em determinados sistemas também será necessário o HTTPS e controle de chaves, então não vi problemas em meter eles instalados).
 * Ferramentas Extras: curl (permite donwloads), tar (descompactação), nano (editor de texto), apt_install_clean (script personalizado para rodar o apt de forma minima e limpa);
 * Foi customizado para o locale ser padrão pt_BR.UTF-8;
 * Foi customizado para o timezone ser padrão UTC-3.
@@ -38,6 +38,12 @@ Se os serviços são uns dependentes de outros, na inicialização os scripts de
 # Não quero colocar um serviço já instalado na imagem, quero manter ela limpa!
 
 Quando você criar um conteiner acessar o mesmo, instalar sua aplicação e colocar os scripts de inicialização e encerramento nas mesmas pastas citadas no exemplo acima.
+
+# Para construir a imagem
+
+Vá até a pasta onde esta o Dockerfile, e digite no terminal:
+
+docker built -t NomeImagem ./
 
 # Para rodar o conteiner
 
