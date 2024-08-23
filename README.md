@@ -28,7 +28,7 @@ Então vamos ao que interessa sobre o que temos nesta imagem:
 
 # Como colocar serviços adicionais nesta imagem?
 
-Se você quer eles atrelados a immagem basta colocar dentro do arquivo **Dockerfile** na linha 69 entre os scripts servicos.sh e limpeza.sh, o seu script personalizado com o serviço que você deseja que tenha já implantado na base da imagem. Qualquer serviço aqui colocado deve possuir um script personalizado de inicialização e parada.
+Se você quer eles atrelados a imagem basta colocar dentro do arquivo **Dockerfile** na linha 69 entre os scripts servicos.sh e limpeza.sh, o seu script personalizado com o serviço que você deseja que tenha já implantado na base da imagem. Qualquer serviço aqui colocado deve possuir um script personalizado de inicialização e parada.
 
 * Os scripts de inicialização devem sempre ser colocados na pasta /etc/my_init.d;
 * Os scripts de encerramento devem sempre ser colocados na pasta /etc/my_init.pre_shutdown.d ou /etc/my_init.post_shutdown.d não ha diferença entre as duas basicamentem, uma executa antes e outra depois.
